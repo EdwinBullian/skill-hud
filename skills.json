@@ -1,11 +1,10 @@
 {
   "skills": [
-    { "name": "FITNESS",     "icon": "💪", "totalXP": 350, "accent": "#ff6b4a", "barStart": "#c62828", "barEnd": "#ff7043" },
-    { "name": "SPORTS",      "icon": "🏀", "totalXP": 300, "accent": "#c77ddb", "barStart": "#6a1b9a", "barEnd": "#ce93d8" },
-    { "name": "FINANCE",     "icon": "💰", "totalXP": 250, "accent": "#ffd700", "barStart": "#b8860b", "barEnd": "#ffd700" },
-    { "name": "PROGRAMMING", "icon": "💻", "totalXP": 200, "accent": "#4ade80", "barStart": "#00600f", "barEnd": "#00e676" },
-    { "name": "COOKING",     "icon": "🍳", "totalXP": 150, "accent": "#fbb040", "barStart": "#e65100", "barEnd": "#ffcc02" },
-    { "name": "SCHOOL",      "icon": "🎓", "totalXP": 0,   "accent": "#60a5fa", "barStart": "#0d47a1", "barEnd": "#64b5f6" }
+    { "name": "FINANCE",  "icon": "💰", "totalXP": 250, "accent": "#ffd700", "barStart": "#b8860b", "barEnd": "#ffd700" },
+    { "name": "SCHOOL",   "icon": "🎓", "totalXP": 0,   "accent": "#60a5fa", "barStart": "#0d47a1", "barEnd": "#64b5f6" },
+    { "name": "FITNESS",  "icon": "💪", "totalXP": 350, "accent": "#ff6b4a", "barStart": "#c62828", "barEnd": "#ff7043" },
+    { "name": "SPORTS",   "icon": "🏀", "totalXP": 300, "accent": "#c77ddb", "barStart": "#6a1b9a", "barEnd": "#ce93d8" },
+    { "name": "HOBBIES",  "icon": "🎮", "totalXP": 150, "accent": "#fbb040", "barStart": "#e65100", "barEnd": "#ffcc02" }
   ],
   "updated": 1744761600
 }

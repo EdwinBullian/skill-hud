@@ -17,71 +17,77 @@
 
     body {
       display: flex;
-      align-items: center;
-      padding: 10px 12px;
+      flex-direction: column;
+      justify-content: center;
+      padding: 12px 14px;
     }
 
-    /* ── GRID ── */
+    /* ── STACK ── */
     .hud {
       display: flex;
+      flex-direction: column;
       gap: 8px;
       width: 100%;
     }
 
-    /* ── CARD ── */
-    .card {
-      flex: 1;
-      background: #202020;
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 6px;
-      padding: 10px 12px 9px;
-      min-width: 0;
-    }
-
-    /* ── TOP ROW: icon + name + level ── */
-    .card-top {
+    /* ── ROW ── */
+    .row {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      margin-bottom: 8px;
+      gap: 9px;
     }
 
-    .card-identity {
+    /* ── LABEL (icon + name) ── */
+    .row-label {
       display: flex;
       align-items: center;
       gap: 6px;
-      min-width: 0;
+      width: 110px;
+      flex-shrink: 0;
     }
 
-    .card-icon { font-size: 14px; line-height: 1; flex-shrink: 0; }
+    .row-icon { font-size: 14px; line-height: 1; flex-shrink: 0; }
 
-    .card-name {
-      font-size: 11px;
+    .row-name {
+      font-size: 10.5px;
       font-weight: 600;
-      letter-spacing: 0.6px;
-      color: #c8c8c8;
+      letter-spacing: 0.5px;
+      color: #a8a8a8;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
-    .card-level {
-      font-size: 10px;
-      font-weight: 700;
-      color: var(--accent);
-      white-space: nowrap;
+    .row.overall .row-name {
+      color: #dedede;
+      font-size: 11px;
+      letter-spacing: 0.6px;
+    }
+
+    /* ── LEVEL BADGE (same height as bar) ── */
+    .level-badge {
+      height: 20px;
+      min-width: 42px;
+      padding: 0 7px;
+      background: var(--accent);
+      color: #111;
+      font-size: 10.5px;
+      font-weight: 800;
+      letter-spacing: 0.2px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       flex-shrink: 0;
-      margin-left: 4px;
-      opacity: 0.9;
     }
 
     /* ── XP BAR ── */
     .bar-wrap {
+      flex: 1;
       background: rgba(255,255,255,0.07);
       border-radius: 5px;
-      height: 11px;
+      height: 20px;
       overflow: hidden;
-      margin-bottom: 6px;
     }
 
     .bar-fill {
@@ -97,9 +103,9 @@
       content: '';
       position: absolute;
       inset: 0;
-      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.25) 50%, transparent 100%);
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.16) 50%, transparent 100%);
       background-size: 200% 100%;
-      animation: sweep 2.8s ease-in-out infinite;
+      animation: sweep 3s ease-in-out infinite;
     }
 
     @keyframes sweep {
@@ -107,16 +113,23 @@
       100% { background-position:  200% 0; }
     }
 
-    /* ── BOTTOM ROW ── */
-    .card-foot {
-      display: flex;
-      justify-content: space-between;
-      font-size: 9.5px;
-      color: rgba(255,255,255,0.28);
-      letter-spacing: 0.2px;
+    /* ── FOOT TEXT ── */
+    .row-foot {
+      font-size: 9px;
+      color: rgba(255,255,255,0.32);
+      text-align: right;
+      flex-shrink: 0;
+      width: 46px;
     }
 
-    .foot-pct { color: var(--accent); opacity: 0.75; }
+    .foot-pct { color: var(--accent); opacity: 0.88; }
+
+    /* ── DIVIDER after Overall ── */
+    .divider {
+      height: 1px;
+      background: rgba(255,255,255,0.09);
+      margin: 1px 0;
+    }
 
     /* ── STATUS ── */
     #liveStatus {
@@ -134,47 +147,80 @@
   <div id="liveStatus">loading…</div>
 
   <script>
-    const REFRESH = 15 * 60 * 1000;  // re-fetch every 15 min (matches GH Actions cadence)
+    const REFRESH = 15 * 60 * 1000;
+
+    // Display order (Overall is prepended automatically)
+    const ORDER = ["FINANCE", "SCHOOL", "FITNESS", "SPORTS", "HOBBIES"];
 
     const FALLBACK = [
-      { name:"FITNESS",     icon:"💪", totalXP:350, accent:"#ff6b4a", barStart:"#c62828", barEnd:"#ff7043" },
-      { name:"SPORTS",      icon:"🏀", totalXP:300, accent:"#c77ddb", barStart:"#6a1b9a", barEnd:"#ce93d8" },
-      { name:"FINANCE",     icon:"💰", totalXP:250, accent:"#ffd700", barStart:"#b8860b", barEnd:"#ffd700" },
-      { name:"PROGRAMMING", icon:"💻", totalXP:200, accent:"#4ade80", barStart:"#00600f", barEnd:"#00e676" },
-      { name:"COOKING",     icon:"🍳", totalXP:150, accent:"#fbb040", barStart:"#e65100", barEnd:"#ffcc02" },
-      { name:"SCHOOL",      icon:"🎓", totalXP:0,   accent:"#60a5fa", barStart:"#0d47a1", barEnd:"#64b5f6" },
+      { name:"FINANCE",  icon:"💰", totalXP:250, accent:"#ffd700", barStart:"#b8860b", barEnd:"#ffd700" },
+      { name:"SCHOOL",   icon:"🎓", totalXP:0,   accent:"#60a5fa", barStart:"#0d47a1", barEnd:"#64b5f6" },
+      { name:"FITNESS",  icon:"💪", totalXP:350, accent:"#ff6b4a", barStart:"#c62828", barEnd:"#ff7043" },
+      { name:"SPORTS",   icon:"🏀", totalXP:300, accent:"#c77ddb", barStart:"#6a1b9a", barEnd:"#ce93d8" },
+      { name:"HOBBIES",  icon:"🎮", totalXP:150, accent:"#fbb040", barStart:"#e65100", barEnd:"#ffcc02" },
     ];
 
     function calcLevel(xp) { return Math.floor(xp / 100) + 1; }
     function calcPct(xp)   { return xp % 100; }
 
+    function normalize(raw) {
+      return raw.map(s => ({
+        ...s,
+        name: s.name.toUpperCase() === "COOKING" ? "HOBBIES" : s.name.toUpperCase()
+      }));
+    }
+
+    function sortSkills(raw) {
+      const norm = normalize(raw);
+      return ORDER.map(n => norm.find(s => s.name === n)).filter(Boolean);
+    }
+
+    function makeRow(icon, name, level, pct, accent, barStart, barEnd, isOverall) {
+      const row = document.createElement("div");
+      row.className = "row" + (isOverall ? " overall" : "");
+      row.style.cssText = `--accent:${accent};--bar-start:${barStart};--bar-end:${barEnd}`;
+      const foot = pct > 0
+        ? `<span class="foot-pct">${pct}%</span>`
+        : `<span style="opacity:0.25">—</span>`;
+      row.innerHTML = `
+        <div class="row-label">
+          <span class="row-icon">${icon}</span>
+          <span class="row-name">${name}</span>
+        </div>
+        <div class="level-badge">LV${level}</div>
+        <div class="bar-wrap">
+          <div class="bar-fill" data-pct="${pct}"></div>
+        </div>
+        <div class="row-foot">${foot}</div>`;
+      return row;
+    }
+
     function render(skills) {
+      const sorted     = sortSkills(skills);
+      const totalXP    = sorted.reduce((s, sk) => s + sk.totalXP, 0);
+      const overallLv  = calcLevel(totalXP);
+      const overallPct = calcPct(totalXP);
+
       const hud = document.getElementById("hud");
       hud.innerHTML = "";
-      skills.forEach(sk => {
-        const level  = calcLevel(sk.totalXP);
-        const pct    = calcPct(sk.totalXP);
-        const toNext = 100 - pct;
-        const card   = document.createElement("div");
-        card.className = "card";
-        card.style.cssText = `--accent:${sk.accent};--bar-start:${sk.barStart};--bar-end:${sk.barEnd}`;
-        card.innerHTML = `
-          <div class="card-top">
-            <div class="card-identity">
-              <span class="card-icon">${sk.icon}</span>
-              <span class="card-name">${sk.name}</span>
-            </div>
-            <span class="card-level">LV${level}</span>
-          </div>
-          <div class="bar-wrap">
-            <div class="bar-fill" data-pct="${pct}"></div>
-          </div>
-          <div class="card-foot">
-            <span class="foot-pct">${pct > 0 ? pct + "%" : ""}</span>
-            <span>${pct > 0 ? toNext + " to go" : (sk.totalXP === 0 ? "not started" : "just leveled!")}</span>
-          </div>`;
-        hud.appendChild(card);
-      });
+
+      // ── Overall row ──
+      hud.appendChild(makeRow(
+        "⭐", "OVERALL", overallLv, overallPct,
+        "#e2c97e", "#7c6520", "#e2c97e", true
+      ));
+
+      // ── Divider ──
+      hud.appendChild(Object.assign(document.createElement("div"), { className: "divider" }));
+
+      // ── Skill rows ──
+      sorted.forEach(sk => hud.appendChild(makeRow(
+        sk.icon, sk.name,
+        calcLevel(sk.totalXP), calcPct(sk.totalXP),
+        sk.accent, sk.barStart, sk.barEnd, false
+      )));
+
+      // Animate bars in
       requestAnimationFrame(() => setTimeout(() => {
         document.querySelectorAll(".bar-fill").forEach(b => b.style.width = b.dataset.pct + "%");
       }, 150));
@@ -188,7 +234,6 @@
 
     async function load() {
       try {
-        // skills.json lives next to index.html — served by GitHub Pages
         const r = await fetch("./skills.json?t=" + Date.now());
         if (!r.ok) throw new Error("no json");
         const j = await r.json();
