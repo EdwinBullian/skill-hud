@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Skill HUD</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      background: #191919;
+      color: #e0e0e0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      padding: 10px 12px;
+    }
+
+    /* ── GRID ── */
+    .hud {
+      display: flex;
+      gap: 8px;
+      width: 100%;
+    }
+
+    /* ── CARD ── */
+    .card {
+      flex: 1;
+      background: #202020;
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 6px;
+      padding: 9px 11px 8px;
+      min-width: 0;
+    }
+
+    /* ── TOP ROW: icon + name + level ── */
+    .card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 7px;
+    }
+
+    .card-identity {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .card-icon { font-size: 14px; line-height: 1; flex-shrink: 0; }
+
+    .card-name {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.6px;
+      color: #c8c8c8;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .card-level {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--accent);
+      white-space: nowrap;
+      flex-shrink: 0;
+      margin-left: 4px;
+      opacity: 0.9;
+    }
+
+    /* ── XP BAR ── */
+    .bar-wrap {
+      background: rgba(255,255,255,0.05);
+      border-radius: 3px;
+      height: 5px;
+      overflow: hidden;
+      margin-bottom: 5px;
+    }
+
+    .bar-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 3px;
+      background: linear-gradient(90deg, var(--bar-start), var(--bar-end));
+      transition: width 1.4s cubic-bezier(0.22, 1, 0.36, 1);
+      position: relative;
+    }
+
+    .bar-fill::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.25) 50%, transparent 100%);
+      background-size: 200% 100%;
+      animation: sweep 2.8s ease-in-out infinite;
+    }
+
+    @keyframes sweep {
+      0%   { background-position: -200% 0; }
+      100% { background-position:  200% 0; }
+    }
+
+    /* ── BOTTOM ROW ── */
+    .card-foot {
+      display: flex;
+      justify-content: space-between;
+      font-size: 9.5px;
+      color: rgba(255,255,255,0.28);
+      letter-spacing: 0.2px;
+    }
+
+    .foot-pct { color: var(--accent); opacity: 0.75; }
+
+    /* ── STATUS ── */
+    #liveStatus {
+      position: fixed;
+      bottom: 3px;
+      right: 8px;
+      font-size: 8px;
+      color: rgba(255,255,255,0.18);
+      letter-spacing: 0.5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="hud" id="hud"></div>
+  <div id="liveStatus">loading…</div>
+
+  <script>
+    const REFRESH = 15 * 60 * 1000;  // re-fetch every 15 min (matches GH Actions cadence)
+
+    const FALLBACK = [
+      { name:"FITNESS",     icon:"💪", totalXP:350, accent:"#ff6b4a", barStart:"#c62828", barEnd:"#ff7043" },
+      { name:"SPORTS",      icon:"🏀", totalXP:300, accent:"#c77ddb", barStart:"#6a1b9a", barEnd:"#ce93d8" },
+      { name:"FINANCE",     icon:"💰", totalXP:250, accent:"#ffd700", barStart:"#b8860b", barEnd:"#ffd700" },
+      { name:"PROGRAMMING", icon:"💻", totalXP:200, accent:"#4ade80", barStart:"#00600f", barEnd:"#00e676" },
+      { name:"COOKING",     icon:"🍳", totalXP:150, accent:"#fbb040", barStart:"#e65100", barEnd:"#ffcc02" },
+      { name:"SCHOOL",      icon:"🎓", totalXP:0,   accent:"#60a5fa", barStart:"#0d47a1", barEnd:"#64b5f6" },
+    ];
+
+    function calcLevel(xp) { return Math.floor(xp / 100) + 1; }
+    function calcPct(xp)   { return xp % 100; }
+
+    function render(skills) {
+      const hud = document.getElementById("hud");
+      hud.innerHTML = "";
+      skills.forEach(sk => {
+        const level  = calcLevel(sk.totalXP);
+        const pct    = calcPct(sk.totalXP);
+        const toNext = 100 - pct;
+        const card   = document.createElement("div");
+        card.className = "card";
+        card.style.cssText = `--accent:${sk.accent};--bar-start:${sk.barStart};--bar-end:${sk.barEnd}`;
+        card.innerHTML = `
+          <div class="card-top">
+            <div class="card-identity">
+              <span class="card-icon">${sk.icon}</span>
+              <span class="card-name">${sk.name}</span>
+            </div>
+            <span class="card-level">LV${level}</span>
+          </div>
+          <div class="bar-wrap">
+            <div class="bar-fill" data-pct="${pct}"></div>
+          </div>
+          <div class="card-foot">
+            <span class="foot-pct">${pct > 0 ? pct + "%" : ""}</span>
+            <span>${pct > 0 ? toNext + " to go" : (sk.totalXP === 0 ? "not started" : "just leveled!")}</span>
+          </div>`;
+        hud.appendChild(card);
+      });
+      requestAnimationFrame(() => setTimeout(() => {
+        document.querySelectorAll(".bar-fill").forEach(b => b.style.width = b.dataset.pct + "%");
+      }, 150));
+    }
+
+    function setStatus(txt, col) {
+      const el = document.getElementById("liveStatus");
+      el.textContent = txt;
+      if (col) el.style.color = col;
+    }
+
+    async function load() {
+      try {
+        // skills.json lives next to index.html — served by GitHub Pages
+        const r = await fetch("./skills.json?t=" + Date.now());
+        if (!r.ok) throw new Error("no json");
+        const j = await r.json();
+        render(j.skills);
+        const d = new Date(j.updated * 1000);
+        setStatus("synced " + d.toLocaleString(), "rgba(74,222,128,0.35)");
+      } catch {
+        render(FALLBACK);
+        setStatus("offline · seed data", "rgba(255,255,255,0.15)");
+      }
+    }
+
+    load();
+    setInterval(load, REFRESH);
+  </script>
+</body>
+</html>

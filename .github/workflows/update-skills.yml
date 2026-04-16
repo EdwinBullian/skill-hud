@@ -1,0 +1,96 @@
+name: Update Skill HUD
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"   # every 15 minutes
+  workflow_dispatch:          # manual trigger from GitHub UI
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Fetch skill XP from Notion and write skills.json
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+        run: |
+          python3 - <<'PYEOF'
+          import json, os, time, urllib.request
+
+          TOKEN   = os.environ["NOTION_TOKEN"]
+          DB_ID   = "08be7317-801c-49cc-83ff-589da11a62a6"
+          API_URL = f"https://api.notion.com/v1/databases/{DB_ID}/query"
+
+          THEMES = {
+            "FITNESS":     {"icon":"💪","accent":"#ff6b4a","barStart":"#c62828","barEnd":"#ff7043"},
+            "SPORTS":      {"icon":"🏀","accent":"#c77ddb","barStart":"#6a1b9a","barEnd":"#ce93d8"},
+            "FINANCE":     {"icon":"💰","accent":"#ffd700","barStart":"#b8860b","barEnd":"#ffd700"},
+            "PROGRAMMING": {"icon":"💻","accent":"#4ade80","barStart":"#00600f","barEnd":"#00e676"},
+            "COOKING":     {"icon":"🍳","accent":"#fbb040","barStart":"#e65100","barEnd":"#ffcc02"},
+            "SCHOOL":      {"icon":"🎓","accent":"#60a5fa","barStart":"#0d47a1","barEnd":"#64b5f6"},
+          }
+          EMOJI_TO_KEY = {v["icon"]: k for k, v in THEMES.items()}
+
+          payload = json.dumps({
+            "filter": {"property": "Is Skill", "checkbox": {"equals": True}},
+            "sorts":  [{"property": "Total XP", "direction": "descending"}],
+            "page_size": 20,
+          }).encode()
+
+          req = urllib.request.Request(
+            API_URL, data=payload, method="POST",
+            headers={
+              "Authorization":  f"Bearer {TOKEN}",
+              "Notion-Version": "2022-06-28",
+              "Content-Type":   "application/json",
+            }
+          )
+          with urllib.request.urlopen(req, timeout=20) as resp:
+            pages = json.loads(resp.read()).get("results", [])
+
+          skills = []
+          for page in pages:
+            props = page.get("properties", {})
+
+            # --- name ---
+            raw = "".join(t.get("plain_text","")
+                          for t in props.get("Name",{}).get("title",[]))
+            name = raw.strip()
+            for emoji, key in EMOJI_TO_KEY.items():
+              if name.startswith(emoji):
+                name = key
+                break
+            else:
+              name = name.upper().split()[-1] if name else "UNKNOWN"
+
+            # --- XP ---
+            xp = int(props.get("Total XP", {}).get("number") or 0)
+
+            theme = THEMES.get(name, {
+              "icon":"⭐","accent":"#888","barStart":"#333","barEnd":"#888"
+            })
+            skills.append({"name": name, "totalXP": xp, **theme})
+
+          output = {"skills": skills, "updated": int(time.time())}
+          with open("skills.json", "w") as f:
+            json.dump(output, f, indent=2, ensure_ascii=False)
+
+          print(f"Wrote {len(skills)} skills to skills.json")
+          for s in skills:
+            lvl = s["totalXP"] // 100 + 1
+            print(f"  {s['icon']}  {s['name']:12s}  XP={s['totalXP']:4d}  LV{lvl}")
+          PYEOF
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add skills.json
+          git diff --staged --quiet && echo "No changes." || \
+            git commit -m "chore: update skill XP [skip ci]" && git push
