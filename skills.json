@@ -2,11 +2,19 @@
   "skills": [
     {
       "name": "FINANCE",
-      "totalXP": 525,
+      "totalXP": 675,
       "icon": "💰",
       "accent": "#ffd700",
       "barStart": "#b8860b",
       "barEnd": "#ffd700"
+    },
+    {
+      "name": "HOBBIES",
+      "totalXP": 450,
+      "icon": "🎮",
+      "accent": "#fbb040",
+      "barStart": "#e65100",
+      "barEnd": "#ffcc02"
     },
     {
       "name": "FITNESS",
@@ -39,17 +47,9 @@
       "accent": "#c77ddb",
       "barStart": "#6a1b9a",
       "barEnd": "#ce93d8"
-    },
-    {
-      "name": "HOBBIES",
-      "totalXP": 150,
-      "icon": "🎮",
-      "accent": "#fbb040",
-      "barStart": "#e65100",
-      "barEnd": "#ffcc02"
     }
   ],
   "streak": 14,
-  "tasksToday": 1,
-  "updated": 1776444367
+  "tasksToday": 3,
+  "updated": 1776447728
 }
