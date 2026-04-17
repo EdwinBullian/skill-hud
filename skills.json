@@ -1,20 +1,20 @@
 {
   "skills": [
     {
-      "name": "PROGRAMMING",
-      "totalXP": 900,
-      "icon": "💻",
-      "accent": "#4ade80",
-      "barStart": "#00600f",
-      "barEnd": "#00e676"
-    },
-    {
       "name": "FINANCE",
-      "totalXP": 675,
+      "totalXP": 4800,
       "icon": "💰",
       "accent": "#ffd700",
       "barStart": "#b8860b",
       "barEnd": "#ffd700"
+    },
+    {
+      "name": "PROGRAMMING",
+      "totalXP": 3100,
+      "icon": "💻",
+      "accent": "#4ade80",
+      "barStart": "#00600f",
+      "barEnd": "#00e676"
     },
     {
       "name": "HOBBIES",
@@ -51,5 +51,5 @@
   ],
   "streak": 14,
   "tasksToday": 4,
-  "updated": 1776457648
+  "updated": 1776460170
 }
