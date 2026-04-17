@@ -37,7 +37,7 @@
       gap: 9px;
     }
 
-    /* ── LABEL (icon + name) ── */
+    /* ── LABEL ── */
     .row-label {
       display: flex;
       align-items: center;
@@ -45,9 +45,7 @@
       width: 110px;
       flex-shrink: 0;
     }
-
     .row-icon { font-size: 14px; line-height: 1; flex-shrink: 0; }
-
     .row-name {
       font-size: 10.5px;
       font-weight: 600;
@@ -57,14 +55,9 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
+    .row.overall .row-name { color: #dedede; font-size: 11px; letter-spacing: 0.6px; }
 
-    .row.overall .row-name {
-      color: #dedede;
-      font-size: 11px;
-      letter-spacing: 0.6px;
-    }
-
-    /* ── LEVEL BADGE (same height as bar) ── */
+    /* ── LEVEL BADGE ── */
     .level-badge {
       height: 20px;
       min-width: 42px;
@@ -88,8 +81,8 @@
       border-radius: 5px;
       height: 20px;
       overflow: hidden;
+      cursor: default;
     }
-
     .bar-fill {
       height: 100%;
       width: 0%;
@@ -97,8 +90,8 @@
       background: linear-gradient(90deg, var(--bar-start), var(--bar-end));
       transition: width 1.4s cubic-bezier(0.22, 1, 0.36, 1);
       position: relative;
+      pointer-events: none;
     }
-
     .bar-fill::after {
       content: '';
       position: absolute;
@@ -107,29 +100,75 @@
       background-size: 200% 100%;
       animation: sweep 3s ease-in-out infinite;
     }
-
     @keyframes sweep {
       0%   { background-position: -200% 0; }
       100% { background-position:  200% 0; }
     }
 
-    /* ── FOOT TEXT ── */
-    .row-foot {
-      font-size: 9px;
-      color: rgba(255,255,255,0.32);
-      text-align: right;
+    /* ── DIVIDER ── */
+    .divider { height: 1px; background: rgba(255,255,255,0.09); margin: 1px 0; }
+
+    /* ── FOOTER ── */
+    .hud-foot {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding-top: 8px;
+      margin-top: 1px;
+      border-top: 1px solid rgba(255,255,255,0.07);
+    }
+    .streak-block {
+      display: flex;
+      align-items: center;
+      gap: 6px;
       flex-shrink: 0;
-      width: 46px;
     }
-
-    .foot-pct { color: var(--accent); opacity: 0.88; }
-
-    /* ── DIVIDER after Overall ── */
-    .divider {
-      height: 1px;
-      background: rgba(255,255,255,0.09);
-      margin: 1px 0;
+    .flame-wrap {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      font-size: 22px;
+      line-height: 1;
     }
+    .flame-count {
+      position: absolute;
+      bottom: 0px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-size: 8.5px;
+      font-weight: 900;
+      color: #fff;
+      text-shadow: 0 0 5px #000, 0 0 5px #000;
+      letter-spacing: -0.5px;
+      pointer-events: none;
+    }
+    .streak-label { font-size: 10px; color: rgba(255,255,255,0.4); }
+    .foot-sep { width: 1px; height: 16px; background: rgba(255,255,255,0.1); flex-shrink: 0; }
+    .xp-to-level { font-size: 10px; color: rgba(255,255,255,0.38); }
+    .xp-to-level strong { color: #e2c97e; font-weight: 700; }
+
+    /* ── TOOLTIP ── */
+    .sk-tip {
+      position: fixed;
+      background: #1c2128;
+      border: 1px solid #444c56;
+      border-radius: 6px;
+      padding: 7px 11px;
+      font-size: 11px;
+      color: #e6edf3;
+      pointer-events: none;
+      z-index: 9999;
+      display: none;
+      white-space: nowrap;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.6);
+      line-height: 1.6;
+    }
+    .sk-tip .tip-name { font-weight: 700; }
+    .sk-tip .tip-xp   { color: rgba(255,255,255,0.5); font-size: 10px; }
 
     /* ── STATUS ── */
     #liveStatus {
@@ -144,20 +183,19 @@
 </head>
 <body>
   <div class="hud" id="hud"></div>
+  <div class="sk-tip" id="skTip"></div>
   <div id="liveStatus">loading…</div>
 
   <script>
     const REFRESH = 15 * 60 * 1000;
-
-    // Display order (Overall is prepended automatically)
-    const ORDER = ["FINANCE", "SCHOOL", "FITNESS", "SPORTS", "HOBBIES"];
+    const ORDER   = ["FINANCE", "SCHOOL", "FITNESS", "SPORTS", "HOBBIES"];
 
     const FALLBACK = [
-      { name:"FINANCE",  icon:"💰", totalXP:250, accent:"#ffd700", barStart:"#b8860b", barEnd:"#ffd700" },
-      { name:"SCHOOL",   icon:"🎓", totalXP:0,   accent:"#60a5fa", barStart:"#0d47a1", barEnd:"#64b5f6" },
-      { name:"FITNESS",  icon:"💪", totalXP:350, accent:"#ff6b4a", barStart:"#c62828", barEnd:"#ff7043" },
-      { name:"SPORTS",   icon:"🏀", totalXP:300, accent:"#c77ddb", barStart:"#6a1b9a", barEnd:"#ce93d8" },
-      { name:"HOBBIES",  icon:"🎮", totalXP:150, accent:"#fbb040", barStart:"#e65100", barEnd:"#ffcc02" },
+      { name:"FINANCE", icon:"💰", totalXP:250, accent:"#ffd700", barStart:"#b8860b", barEnd:"#ffd700" },
+      { name:"SCHOOL",  icon:"🎓", totalXP:0,   accent:"#60a5fa", barStart:"#0d47a1", barEnd:"#64b5f6" },
+      { name:"FITNESS", icon:"💪", totalXP:350, accent:"#ff6b4a", barStart:"#c62828", barEnd:"#ff7043" },
+      { name:"SPORTS",  icon:"🏀", totalXP:300, accent:"#c77ddb", barStart:"#6a1b9a", barEnd:"#ce93d8" },
+      { name:"HOBBIES", icon:"🎮", totalXP:150, accent:"#fbb040", barStart:"#e65100", barEnd:"#ffcc02" },
     ];
 
     function calcLevel(xp) { return Math.floor(xp / 100) + 1; }
@@ -169,19 +207,34 @@
         name: s.name.toUpperCase() === "COOKING" ? "HOBBIES" : s.name.toUpperCase()
       }));
     }
-
     function sortSkills(raw) {
       const norm = normalize(raw);
       return ORDER.map(n => norm.find(s => s.name === n)).filter(Boolean);
     }
 
-    function makeRow(icon, name, level, pct, accent, barStart, barEnd, isOverall) {
+    const tip = document.getElementById("skTip");
+
+    function attachTip(el, name, xp, accent) {
+      const lv  = calcLevel(xp);
+      const cur = calcPct(xp);         // XP earned in current level (0–99)
+      const rem = 100 - cur;           // XP remaining to next level
+      el.addEventListener("mouseenter", () => {
+        tip.innerHTML =
+          `<span class="tip-name" style="color:${accent}">${name}</span><br>` +
+          `<span class="tip-xp">${cur} / 100 XP &nbsp;·&nbsp; ${rem} XP to LV${lv + 1}</span>`;
+        tip.style.display = "block";
+      });
+      el.addEventListener("mousemove", e => {
+        tip.style.left = (e.clientX + 14) + "px";
+        tip.style.top  = (e.clientY - 10) + "px";
+      });
+      el.addEventListener("mouseleave", () => tip.style.display = "none");
+    }
+
+    function makeRow(icon, name, level, pct, xp, accent, barStart, barEnd, isOverall) {
       const row = document.createElement("div");
       row.className = "row" + (isOverall ? " overall" : "");
       row.style.cssText = `--accent:${accent};--bar-start:${barStart};--bar-end:${barEnd}`;
-      const foot = pct > 0
-        ? `<span class="foot-pct">${pct}%</span>`
-        : `<span style="opacity:0.25">—</span>`;
       row.innerHTML = `
         <div class="row-label">
           <span class="row-icon">${icon}</span>
@@ -190,35 +243,49 @@
         <div class="level-badge">LV${level}</div>
         <div class="bar-wrap">
           <div class="bar-fill" data-pct="${pct}"></div>
-        </div>
-        <div class="row-foot">${foot}</div>`;
+        </div>`;
+      attachTip(row.querySelector(".bar-wrap"), name, xp, accent);
       return row;
     }
 
-    function render(skills) {
-      const sorted     = sortSkills(skills);
+    function render(skills, streak) {
+      const sorted = sortSkills(skills);
+
+      // Overall = average XP per skill → level from that average
       const totalXP    = sorted.reduce((s, sk) => s + sk.totalXP, 0);
-      const overallLv  = calcLevel(totalXP);
-      const overallPct = calcPct(totalXP);
+      const avgXP      = Math.round(totalXP / Math.max(sorted.length, 1));
+      const overallLv  = calcLevel(avgXP);
+      const overallPct = calcPct(avgXP);
+      const overallRem = 100 - overallPct;
 
       const hud = document.getElementById("hud");
       hud.innerHTML = "";
 
-      // ── Overall row ──
+      // Overall row
       hud.appendChild(makeRow(
-        "⭐", "OVERALL", overallLv, overallPct,
+        "⭐", "OVERALL", overallLv, overallPct, avgXP,
         "#e2c97e", "#7c6520", "#e2c97e", true
       ));
-
-      // ── Divider ──
       hud.appendChild(Object.assign(document.createElement("div"), { className: "divider" }));
 
-      // ── Skill rows ──
+      // Skill rows
       sorted.forEach(sk => hud.appendChild(makeRow(
         sk.icon, sk.name,
-        calcLevel(sk.totalXP), calcPct(sk.totalXP),
+        calcLevel(sk.totalXP), calcPct(sk.totalXP), sk.totalXP,
         sk.accent, sk.barStart, sk.barEnd, false
       )));
+
+      // Footer: flame streak + XP to level
+      const foot = document.createElement("div");
+      foot.className = "hud-foot";
+      foot.innerHTML = `
+        <div class="streak-block">
+          <div class="flame-wrap">🔥<span class="flame-count">${streak}</span></div>
+          <span class="streak-label">day streak</span>
+        </div>
+        <div class="foot-sep"></div>
+        <div class="xp-to-level"><strong>${overallRem} XP</strong> to next level</div>`;
+      hud.appendChild(foot);
 
       // Animate bars in
       requestAnimationFrame(() => setTimeout(() => {
@@ -237,11 +304,11 @@
         const r = await fetch("./skills.json?t=" + Date.now());
         if (!r.ok) throw new Error("no json");
         const j = await r.json();
-        render(j.skills);
+        render(j.skills, j.streak ?? 0);
         const d = new Date(j.updated * 1000);
         setStatus("synced " + d.toLocaleString(), "rgba(74,222,128,0.35)");
       } catch {
-        render(FALLBACK);
+        render(FALLBACK, 0);
         setStatus("offline · seed data", "rgba(255,255,255,0.15)");
       }
     }

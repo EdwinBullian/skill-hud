@@ -6,5 +6,6 @@
     { "name": "SPORTS",   "icon": "🏀", "totalXP": 300, "accent": "#c77ddb", "barStart": "#6a1b9a", "barEnd": "#ce93d8" },
     { "name": "HOBBIES",  "icon": "🎮", "totalXP": 150, "accent": "#fbb040", "barStart": "#e65100", "barEnd": "#ffcc02" }
   ],
+  "streak": 0,
   "updated": 1744761600
 }
