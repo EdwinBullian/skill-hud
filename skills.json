@@ -1,12 +1,36 @@
 {
   "skills": [
     {
+      "name": "FINANCE",
+      "totalXP": 525,
+      "icon": "💰",
+      "accent": "#ffd700",
+      "barStart": "#b8860b",
+      "barEnd": "#ffd700"
+    },
+    {
       "name": "FITNESS",
       "totalXP": 350,
       "icon": "💪",
       "accent": "#ff6b4a",
       "barStart": "#c62828",
       "barEnd": "#ff7043"
+    },
+    {
+      "name": "SCHOOL",
+      "totalXP": 300,
+      "icon": "🎓",
+      "accent": "#60a5fa",
+      "barStart": "#0d47a1",
+      "barEnd": "#64b5f6"
+    },
+    {
+      "name": "PROGRAMMING",
+      "totalXP": 300,
+      "icon": "💻",
+      "accent": "#4ade80",
+      "barStart": "#00600f",
+      "barEnd": "#00e676"
     },
     {
       "name": "SPORTS",
@@ -17,39 +41,15 @@
       "barEnd": "#ce93d8"
     },
     {
-      "name": "FINANCE",
-      "totalXP": 250,
-      "icon": "💰",
-      "accent": "#ffd700",
-      "barStart": "#b8860b",
-      "barEnd": "#ffd700"
-    },
-    {
-      "name": "PROGRAMMING",
-      "totalXP": 200,
-      "icon": "💻",
-      "accent": "#4ade80",
-      "barStart": "#00600f",
-      "barEnd": "#00e676"
-    },
-    {
       "name": "HOBBIES",
       "totalXP": 150,
       "icon": "🎮",
       "accent": "#fbb040",
       "barStart": "#e65100",
       "barEnd": "#ffcc02"
-    },
-    {
-      "name": "SCHOOL",
-      "totalXP": 0,
-      "icon": "🎓",
-      "accent": "#60a5fa",
-      "barStart": "#0d47a1",
-      "barEnd": "#64b5f6"
     }
   ],
-  "streak": 1,
-  "tasksToday": 5,
-  "updated": 1776390774
+  "streak": 15,
+  "tasksToday": 2,
+  "updated": 1776397454
 }
