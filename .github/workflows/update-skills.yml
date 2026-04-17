@@ -99,8 +99,8 @@ jobs:
           tasks_payload = json.dumps({
             "filter": {
               "and": [
-                {"property": "Complete",    "checkbox": {"equals": False}},
-                {"property": "Complete By", "date":     {"equals": today_str}},
+                {"property": "Complete", "status": {"does_not_equal": "Done"}},
+                {"property": "Due",      "date":   {"equals": today_str}},
               ]
             },
             "page_size": 100,
