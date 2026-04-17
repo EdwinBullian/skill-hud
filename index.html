@@ -150,6 +150,9 @@
     .foot-sep { width: 1px; height: 16px; background: rgba(255,255,255,0.1); flex-shrink: 0; }
     .xp-to-level { font-size: 10px; color: rgba(255,255,255,0.38); }
     .xp-to-level strong { color: #e2c97e; font-weight: 700; }
+    .tasks-today { font-size: 10px; color: rgba(255,255,255,0.38); }
+    .tasks-today .task-num { font-weight: 700; color: #e0e0e0; }
+    .tasks-today .tasks-done { color: #4ade80; font-weight: 600; }
 
     /* ── TOOLTIP ── */
     .sk-tip {
@@ -248,7 +251,7 @@
       return row;
     }
 
-    function render(skills, streak) {
+    function render(skills, streak, tasksToday) {
       const sorted = sortSkills(skills);
 
       // Overall = average XP per skill → level from that average
@@ -275,7 +278,10 @@
         sk.accent, sk.barStart, sk.barEnd, false
       )));
 
-      // Footer: flame streak + XP to level
+      // Footer: flame streak + XP to level + tasks due
+      const taskHTML = tasksToday > 0
+        ? `<span class="task-num">${tasksToday}</span> tasks due`
+        : `<span class="tasks-done">All tasks complete ✓</span>`;
       const foot = document.createElement("div");
       foot.className = "hud-foot";
       foot.innerHTML = `
@@ -284,7 +290,9 @@
           <span class="streak-label">day streak</span>
         </div>
         <div class="foot-sep"></div>
-        <div class="xp-to-level"><strong>${overallRem} XP</strong> to next level</div>`;
+        <div class="xp-to-level"><strong>${overallRem} XP</strong> to next level</div>
+        <div class="foot-sep"></div>
+        <div class="tasks-today">${taskHTML}</div>`;
       hud.appendChild(foot);
 
       // Animate bars in
@@ -304,11 +312,11 @@
         const r = await fetch("./skills.json?t=" + Date.now());
         if (!r.ok) throw new Error("no json");
         const j = await r.json();
-        render(j.skills, j.streak ?? 0);
+        render(j.skills, j.streak ?? 0, j.tasksToday ?? 0);
         const d = new Date(j.updated * 1000);
         setStatus("synced " + d.toLocaleString(), "rgba(74,222,128,0.35)");
       } catch {
-        render(FALLBACK, 0);
+        render(FALLBACK, 0, 0);
         setStatus("offline · seed data", "rgba(255,255,255,0.15)");
       }
     }
