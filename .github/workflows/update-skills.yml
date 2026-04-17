@@ -24,7 +24,7 @@ jobs:
           import json, os, time, urllib.request
 
           TOKEN   = os.environ["NOTION_TOKEN"]
-          DB_ID   = "08be7317-801c-49cc-83ff-589da11a62a6"
+          DB_ID   = "6fb7c599-84eb-414d-84bd-3b8492545c6b"
           API_URL = f"https://api.notion.com/v1/databases/{DB_ID}/query"
 
           THEMES = {
@@ -70,8 +70,13 @@ jobs:
             else:
               name = name.upper().split()[-1] if name else "UNKNOWN"
 
-            # --- XP ---
-            xp = int(props.get("Total XP", {}).get("number") or 0)
+            # --- XP --- (Total XP is a formula, not a plain number)
+            xp_prop = props.get("Total XP", {})
+            if xp_prop.get("type") == "formula":
+              fval = xp_prop.get("formula", {})
+              xp = int(fval.get("number") or fval.get("string") or 0)
+            else:
+              xp = int(xp_prop.get("number") or 0)
 
             # Normalize legacy name
             if name == "COOKING":
