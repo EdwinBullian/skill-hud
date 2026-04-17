@@ -119,10 +119,21 @@ jobs:
 
           print(f"Tasks due today ({today_str}): {tasks_today}")
 
+          # ── Fetch streak from life-os-widgets habits.json ─────────────────
+          HABITS_URL = "https://raw.githubusercontent.com/EdwinBullian/life-os-widgets/main/habits.json"
+          try:
+            with urllib.request.urlopen(HABITS_URL, timeout=10) as hr:
+              habits_json = json.loads(hr.read())
+            streak = habits_json.get("streak", 0)
+            print(f"Streak from habits.json: {streak}")
+          except Exception as e:
+            print(f"Warning: could not fetch habits.json ({e}); streak=0")
+            streak = 0
+
           # ── Write output ──────────────────────────────────────────────────
           output = {
             "skills":     skills,
-            "streak":     0,        # TODO: wire up habit streak
+            "streak":     streak,
             "tasksToday": tasks_today,
             "updated":    int(time.time()),
           }
