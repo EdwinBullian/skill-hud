@@ -191,18 +191,47 @@
 
   <script>
     const REFRESH = 15 * 60 * 1000;
-    const ORDER   = ["FINANCE", "SCHOOL", "FITNESS", "SPORTS", "HOBBIES"];
+
+    // Display order — edit here to reorder or hide skills
+    const ORDER = ["FINANCE", "PROGRAMMING", "SCHOOL", "FITNESS", "SPORTS", "HOBBIES"];
 
     const FALLBACK = [
-      { name:"FINANCE", icon:"💰", totalXP:250, accent:"#ffd700", barStart:"#b8860b", barEnd:"#ffd700" },
-      { name:"SCHOOL",  icon:"🎓", totalXP:0,   accent:"#60a5fa", barStart:"#0d47a1", barEnd:"#64b5f6" },
-      { name:"FITNESS", icon:"💪", totalXP:350, accent:"#ff6b4a", barStart:"#c62828", barEnd:"#ff7043" },
-      { name:"SPORTS",  icon:"🏀", totalXP:300, accent:"#c77ddb", barStart:"#6a1b9a", barEnd:"#ce93d8" },
-      { name:"HOBBIES", icon:"🎮", totalXP:150, accent:"#fbb040", barStart:"#e65100", barEnd:"#ffcc02" },
+      { name:"FINANCE",     icon:"💰", totalXP:0, level:1, xpInto:0, xpNeeded:100, pct:0, accent:"#ffd700", barStart:"#b8860b", barEnd:"#ffd700" },
+      { name:"PROGRAMMING", icon:"💻", totalXP:0, level:1, xpInto:0, xpNeeded:100, pct:0, accent:"#4ade80", barStart:"#00600f", barEnd:"#00e676" },
+      { name:"SCHOOL",      icon:"🎓", totalXP:0, level:1, xpInto:0, xpNeeded:100, pct:0, accent:"#60a5fa", barStart:"#0d47a1", barEnd:"#64b5f6" },
+      { name:"FITNESS",     icon:"💪", totalXP:0, level:1, xpInto:0, xpNeeded:100, pct:0, accent:"#ff6b4a", barStart:"#c62828", barEnd:"#ff7043" },
+      { name:"SPORTS",      icon:"🏀", totalXP:0, level:1, xpInto:0, xpNeeded:100, pct:0, accent:"#c77ddb", barStart:"#6a1b9a", barEnd:"#ce93d8" },
+      { name:"HOBBIES",     icon:"🎮", totalXP:0, level:1, xpInto:0, xpNeeded:100, pct:0, accent:"#fbb040", barStart:"#e65100", barEnd:"#ffcc02" },
     ];
 
-    function calcLevel(xp) { return Math.floor(xp / 100) + 1; }
-    function calcPct(xp)   { return xp % 100; }
+    // ── Leveling curve (matches Python in update-skills.yml exactly) ──────────
+    // XP to go from level N to N+1 = floor(100 * N^1.8)
+    // Cumulative to reach level 5:  ~2,384 XP
+    // Cumulative to reach level 10: ~20,096 XP
+    // Cumulative to reach level 20: ~111,736 XP
+    function xpForLevel(n) { return Math.floor(100 * Math.pow(n, 1.8)); }
+
+    function levelFromXP(totalXP) {
+      let level = 1, accumulated = 0;
+      while (true) {
+        const needed = xpForLevel(level);
+        if (accumulated + needed > totalXP) break;
+        accumulated += needed;
+        level++;
+      }
+      const xpInto   = totalXP - accumulated;
+      const xpNeeded = xpForLevel(level);
+      const pct      = xpNeeded > 0 ? Math.round(xpInto / xpNeeded * 100) : 0;
+      return { level, xpInto, xpNeeded, pct };
+    }
+
+    // Use pre-calculated values from skills.json if available, fall back to JS calc
+    function getSkillLevel(sk) {
+      if (sk.level !== undefined) {
+        return { level: sk.level, xpInto: sk.xpInto, xpNeeded: sk.xpNeeded, pct: sk.pct };
+      }
+      return levelFromXP(sk.totalXP);
+    }
 
     function normalize(raw) {
       return raw.map(s => ({
@@ -217,14 +246,15 @@
 
     const tip = document.getElementById("skTip");
 
-    function attachTip(el, name, xp, accent) {
-      const lv  = calcLevel(xp);
-      const cur = calcPct(xp);         // XP earned in current level (0–99)
-      const rem = 100 - cur;           // XP remaining to next level
+    function attachTip(el, name, sk, accent) {
+      const { level, xpInto, xpNeeded } = getSkillLevel(sk);
+      const rem = xpNeeded - xpInto;
       el.addEventListener("mouseenter", () => {
         tip.innerHTML =
           `<span class="tip-name" style="color:${accent}">${name}</span><br>` +
-          `<span class="tip-xp">${cur} / 100 XP &nbsp;·&nbsp; ${rem} XP to LV${lv + 1}</span>`;
+          `<span class="tip-xp">Total XP: ${sk.totalXP.toLocaleString()} &nbsp;·&nbsp; ` +
+          `${xpInto.toLocaleString()} / ${xpNeeded.toLocaleString()} XP &nbsp;·&nbsp; ` +
+          `${rem.toLocaleString()} XP to LV${level + 1}</span>`;
         tip.style.display = "block";
       });
       el.addEventListener("mousemove", e => {
@@ -234,20 +264,21 @@
       el.addEventListener("mouseleave", () => tip.style.display = "none");
     }
 
-    function makeRow(icon, name, level, pct, xp, accent, barStart, barEnd, isOverall) {
+    function makeRow(sk, isOverall) {
+      const { level, pct } = getSkillLevel(sk);
       const row = document.createElement("div");
       row.className = "row" + (isOverall ? " overall" : "");
-      row.style.cssText = `--accent:${accent};--bar-start:${barStart};--bar-end:${barEnd}`;
+      row.style.cssText = `--accent:${sk.accent};--bar-start:${sk.barStart};--bar-end:${sk.barEnd}`;
       row.innerHTML = `
         <div class="row-label">
-          <span class="row-icon">${icon}</span>
-          <span class="row-name">${name}</span>
+          <span class="row-icon">${sk.icon}</span>
+          <span class="row-name">${sk.name}</span>
         </div>
         <div class="level-badge">LV${level}</div>
         <div class="bar-wrap">
           <div class="bar-fill" data-pct="${pct}"></div>
         </div>`;
-      attachTip(row.querySelector(".bar-wrap"), name, xp, accent);
+      attachTip(row.querySelector(".bar-wrap"), sk.name, sk, sk.accent);
       return row;
     }
 
@@ -255,33 +286,31 @@
       const sorted = sortSkills(skills);
 
       // Overall = average XP per skill → level from that average
-      const totalXP    = sorted.reduce((s, sk) => s + sk.totalXP, 0);
-      const avgXP      = Math.round(totalXP / Math.max(sorted.length, 1));
-      const overallLv  = calcLevel(avgXP);
-      const overallPct = calcPct(avgXP);
-      const overallRem = 100 - overallPct;
+      const totalXP   = sorted.reduce((s, sk) => s + sk.totalXP, 0);
+      const avgXP     = Math.round(totalXP / Math.max(sorted.length, 1));
+      const overall   = levelFromXP(avgXP);
+      const overallSk = {
+        name: "OVERALL", icon: "⭐", totalXP: avgXP,
+        level: overall.level, xpInto: overall.xpInto,
+        xpNeeded: overall.xpNeeded, pct: overall.pct,
+        accent: "#e2c97e", barStart: "#7c6520", barEnd: "#e2c97e"
+      };
 
       const hud = document.getElementById("hud");
       hud.innerHTML = "";
 
       // Overall row
-      hud.appendChild(makeRow(
-        "⭐", "OVERALL", overallLv, overallPct, avgXP,
-        "#e2c97e", "#7c6520", "#e2c97e", true
-      ));
+      hud.appendChild(makeRow(overallSk, true));
       hud.appendChild(Object.assign(document.createElement("div"), { className: "divider" }));
 
       // Skill rows
-      sorted.forEach(sk => hud.appendChild(makeRow(
-        sk.icon, sk.name,
-        calcLevel(sk.totalXP), calcPct(sk.totalXP), sk.totalXP,
-        sk.accent, sk.barStart, sk.barEnd, false
-      )));
+      sorted.forEach(sk => hud.appendChild(makeRow(sk, false)));
 
-      // Footer: flame streak + XP to level + tasks due
+      // Footer
       const taskHTML = tasksToday > 0
         ? `<span class="task-num">${tasksToday}</span> tasks due`
         : `<span class="tasks-done">All tasks complete ✓</span>`;
+      const xpRem = overall.xpNeeded - overall.xpInto;
       const foot = document.createElement("div");
       foot.className = "hud-foot";
       foot.innerHTML = `
@@ -290,7 +319,7 @@
           <span class="streak-label">day streak</span>
         </div>
         <div class="foot-sep"></div>
-        <div class="xp-to-level"><strong>${overallRem} XP</strong> to next level</div>
+        <div class="xp-to-level"><strong>${xpRem.toLocaleString()} XP</strong> to next level</div>
         <div class="foot-sep"></div>
         <div class="tasks-today">${taskHTML}</div>`;
       hud.appendChild(foot);

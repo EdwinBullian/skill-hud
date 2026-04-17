@@ -21,71 +21,88 @@ jobs:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
         run: |
           python3 - <<'PYEOF'
-          import json, os, time, urllib.request
+          import json, os, time, math, urllib.request
 
-          TOKEN   = os.environ["NOTION_TOKEN"]
-          DB_ID   = "6fb7c599-84eb-414d-84bd-3b8492545c6b"
-          API_URL = f"https://api.notion.com/v1/databases/{DB_ID}/query"
+          TOKEN = os.environ["NOTION_TOKEN"]
 
+          # ── Leveling curve ────────────────────────────────────────────────────
+          # XP needed to go FROM level N to N+1 = floor(100 * N^1.8)
+          # This makes each level progressively harder:
+          #   L1→2: 100 XP  |  L5→6: 1,858 XP  |  L10→11: 6,310 XP  |  L20→21: 21,450 XP
+          def xp_for_level(n):
+              return int(100 * n ** 1.8)
+
+          def level_from_xp(total_xp):
+              level = 1
+              accumulated = 0
+              while True:
+                  needed = xp_for_level(level)
+                  if accumulated + needed > total_xp:
+                      break
+                  accumulated += needed
+                  level += 1
+              xp_into = total_xp - accumulated
+              xp_needed = xp_for_level(level)
+              pct = round(xp_into / xp_needed * 100) if xp_needed > 0 else 0
+              return level, xp_into, xp_needed, pct
+
+          # ── Skill themes ──────────────────────────────────────────────────────
           THEMES = {
-            "FITNESS":     {"icon":"💪","accent":"#ff6b4a","barStart":"#c62828","barEnd":"#ff7043"},
-            "SPORTS":      {"icon":"🏀","accent":"#c77ddb","barStart":"#6a1b9a","barEnd":"#ce93d8"},
-            "FINANCE":     {"icon":"💰","accent":"#ffd700","barStart":"#b8860b","barEnd":"#ffd700"},
-            "PROGRAMMING": {"icon":"💻","accent":"#4ade80","barStart":"#00600f","barEnd":"#00e676"},
-            "HOBBIES":     {"icon":"🎮","accent":"#fbb040","barStart":"#e65100","barEnd":"#ffcc02"},
-            "COOKING":     {"icon":"🎮","accent":"#fbb040","barStart":"#e65100","barEnd":"#ffcc02"},
-            "SCHOOL":      {"icon":"🎓","accent":"#60a5fa","barStart":"#0d47a1","barEnd":"#64b5f6"},
+            "FINANCE":     {"icon": "💰", "accent": "#ffd700", "barStart": "#b8860b", "barEnd": "#ffd700"},
+            "PROGRAMMING": {"icon": "💻", "accent": "#4ade80", "barStart": "#00600f", "barEnd": "#00e676"},
+            "FITNESS":     {"icon": "💪", "accent": "#ff6b4a", "barStart": "#c62828", "barEnd": "#ff7043"},
+            "SPORTS":      {"icon": "🏀", "accent": "#c77ddb", "barStart": "#6a1b9a", "barEnd": "#ce93d8"},
+            "HOBBIES":     {"icon": "🎮", "accent": "#fbb040", "barStart": "#e65100", "barEnd": "#ffcc02"},
+            "SCHOOL":      {"icon": "🎓", "accent": "#60a5fa", "barStart": "#0d47a1", "barEnd": "#64b5f6"},
           }
-          EMOJI_TO_KEY = {v["icon"]: k for k, v in THEMES.items()}
 
-          payload = json.dumps({
-            "filter": {"property": "Is Skill", "checkbox": {"equals": True}},
-            "sorts":  [{"property": "Total XP", "direction": "descending"}],
-            "page_size": 20,
-          }).encode()
+          # ── Fetch XP from XP Tracker database ────────────────────────────────
+          # This DB is the single source of truth: one row per skill, manually updated
+          # when tasks/projects/goals/achievements are completed. No pre-counting.
+          XP_TRACKER_DB = "38970bbf-26ca-4aff-b573-c35e36de1c7a"
+          XP_URL = f"https://api.notion.com/v1/databases/{XP_TRACKER_DB}/query"
 
-          req = urllib.request.Request(
-            API_URL, data=payload, method="POST",
+          xp_payload = json.dumps({"page_size": 20}).encode()
+          xp_req = urllib.request.Request(
+            XP_URL, data=xp_payload, method="POST",
             headers={
               "Authorization":  f"Bearer {TOKEN}",
               "Notion-Version": "2022-06-28",
               "Content-Type":   "application/json",
             }
           )
-          with urllib.request.urlopen(req, timeout=20) as resp:
+          with urllib.request.urlopen(xp_req, timeout=20) as resp:
             pages = json.loads(resp.read()).get("results", [])
 
           skills = []
           for page in pages:
             props = page.get("properties", {})
 
-            # --- name ---
-            raw = "".join(t.get("plain_text","")
-                          for t in props.get("Name",{}).get("title",[]))
-            name = raw.strip()
-            for emoji, key in EMOJI_TO_KEY.items():
-              if name.startswith(emoji):
-                name = key
-                break
-            else:
-              name = name.upper().split()[-1] if name else "UNKNOWN"
+            # Skill name
+            skill_name = "".join(
+              t.get("plain_text", "")
+              for t in props.get("Skill", {}).get("title", [])
+            ).strip().upper()
 
-            # --- XP --- (Total XP is a formula, not a plain number)
-            xp_prop = props.get("Total XP", {})
-            if xp_prop.get("type") == "formula":
-              fval = xp_prop.get("formula", {})
-              xp = int(fval.get("number") or fval.get("string") or 0)
-            else:
-              xp = int(xp_prop.get("number") or 0)
+            # XP Earned (number property — what was actually earned, no pre-counting)
+            xp_prop = props.get("XP Earned", {})
+            total_xp = int(xp_prop.get("number") or 0)
 
-            # Normalize legacy name
-            if name == "COOKING":
-              name = "HOBBIES"
+            if skill_name not in THEMES:
+              continue
 
-            theme = THEMES.get(name, {
-              "icon":"⭐","accent":"#888","barStart":"#333","barEnd":"#888"
+            level, xp_into, xp_needed, pct = level_from_xp(total_xp)
+            theme = THEMES[skill_name]
+
+            skills.append({
+              "name":      skill_name,
+              "totalXP":   total_xp,
+              "level":     level,
+              "xpInto":    xp_into,
+              "xpNeeded":  xp_needed,
+              "pct":       pct,
+              **theme,
             })
-            skills.append({"name": name, "totalXP": xp, **theme})
 
           # ── Tasks due today (incomplete, due date = today in PST) ──────────
           from datetime import datetime, timezone, timedelta
@@ -147,8 +164,7 @@ jobs:
 
           print(f"Wrote {len(skills)} skills to skills.json")
           for s in skills:
-            lvl = s["totalXP"] // 100 + 1
-            print(f"  {s['icon']}  {s['name']:12s}  XP={s['totalXP']:4d}  LV{lvl}")
+            print(f"  {s['icon']}  {s['name']:12s}  XP={s['totalXP']:5d}  LV{s['level']}  ({s['pct']}% to LV{s['level']+1})")
           PYEOF
 
       - name: Commit and push if changed
