@@ -116,13 +116,13 @@ jobs:
             "Personal":    "HOBBIES",
           }
 
-          # ── Database IDs ──────────────────────────────────────────────────────
-          AREAS_DB        = "08be7317-801c-49cc-83ff-589da11a62a6"
-          TASKS_DB        = "c87931c9-3b5f-4721-bd2f-946204b76d25"
-          PROJECTS_DB     = "02b4e1f3-beca-4281-8156-8ada9173004d"
-          GOALS_DB        = "8396b50f-7479-4a48-8b8c-749ee6c84452"
-          ACHIEVEMENTS_DB = "b6397050-8b92-4fbf-b7ca-c8f3bcbcb2fa"
-          XP_TRACKER_DB   = "38970bbf-26ca-4aff-b573-c35e36de1c7a"
+          # ── Database IDs (page UUIDs from notion.so URLs — NOT collection IDs) ──
+          AREAS_DB        = "6fb7c599-84eb-414d-84bd-3b8492545c6b"
+          TASKS_DB        = "40afee18-2dcb-4447-bd69-e10d95b9c681"
+          PROJECTS_DB     = "6ded4ccc-7510-48d4-b33e-c7adfa9d8afe"
+          GOALS_DB        = "1deee2a0-97ce-4843-8fd9-5af9bf57405e"
+          ACHIEVEMENTS_DB = "843b6ddb-8acd-43b5-b2f2-a030267c1cdd"
+          XP_TRACKER_DB   = "c753aad3-3aa9-4239-b02d-e43e00608850"
 
           print("=== Fetching Areas ===")
           area_pages = notion_query(AREAS_DB, {}, "Areas")
@@ -245,20 +245,22 @@ jobs:
             print(f"  {theme['icon']}  {skill_name:12s}  XP={total_xp:5d}  LV{level}  ({pct}% to LV{level+1})")
 
           # ── Update XP Tracker in Notion ───────────────────────────────────────
-          # Query XP Tracker to get page IDs by skill name
           print("\n=== Updating XP Tracker in Notion ===")
-          tracker_pages = notion_query(XP_TRACKER_DB, {}, "XP Tracker")
-          for tp in tracker_pages:
-            props = tp.get("properties", {})
-            skill_name = get_text(props.get("Skill")).strip().upper()
-            if skill_name in xp:
-              try:
-                notion_update(tp["id"], {
-                  "XP Earned": {"number": xp[skill_name]}
-                })
-                print(f"  Updated {skill_name} → {xp[skill_name]} XP")
-              except Exception as e:
-                print(f"  Warning: could not update {skill_name}: {e}")
+          try:
+            tracker_pages = notion_query(XP_TRACKER_DB, {}, "XP Tracker")
+            for tp in tracker_pages:
+              props = tp.get("properties", {})
+              skill_name = get_text(props.get("Skill")).strip().upper()
+              if skill_name in xp:
+                try:
+                  notion_update(tp["id"], {
+                    "XP Earned": {"number": xp[skill_name]}
+                  })
+                  print(f"  Updated {skill_name} → {xp[skill_name]} XP")
+                except Exception as e:
+                  print(f"  Warning: could not update {skill_name}: {e}")
+          except Exception as e:
+            print(f"  Warning: XP Tracker update skipped ({e})")
 
           # ── Tasks due today ───────────────────────────────────────────────────
           from datetime import datetime, timezone, timedelta
