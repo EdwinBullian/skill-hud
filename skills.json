@@ -2,11 +2,11 @@
   "skills": [
     {
       "name": "FINANCE",
-      "totalXP": 50,
+      "totalXP": 75,
       "level": 1,
-      "xpInto": 50,
+      "xpInto": 75,
       "xpNeeded": 100,
-      "pct": 50,
+      "pct": 75,
       "icon": "💰",
       "accent": "#ffd700",
       "barStart": "#b8860b",
@@ -26,11 +26,11 @@
     },
     {
       "name": "FITNESS",
-      "totalXP": 0,
-      "level": 1,
-      "xpInto": 0,
-      "xpNeeded": 100,
-      "pct": 0,
+      "totalXP": 500,
+      "level": 3,
+      "xpInto": 52,
+      "xpNeeded": 722,
+      "pct": 7,
       "icon": "💪",
       "accent": "#ff6b4a",
       "barStart": "#c62828",
@@ -38,11 +38,11 @@
     },
     {
       "name": "SPORTS",
-      "totalXP": 0,
-      "level": 1,
-      "xpInto": 0,
-      "xpNeeded": 100,
-      "pct": 0,
+      "totalXP": 125,
+      "level": 2,
+      "xpInto": 25,
+      "xpNeeded": 348,
+      "pct": 7,
       "icon": "🏀",
       "accent": "#c77ddb",
       "barStart": "#6a1b9a",
@@ -74,6 +74,6 @@
     }
   ],
   "streak": 0,
-  "tasksToday": 2,
-  "updated": 1777496106
+  "tasksToday": 0,
+  "updated": 1777499659
 }
