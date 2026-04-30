@@ -38,11 +38,11 @@
     },
     {
       "name": "SPORTS",
-      "totalXP": 125,
+      "totalXP": 200,
       "level": 2,
-      "xpInto": 25,
+      "xpInto": 100,
       "xpNeeded": 348,
-      "pct": 7,
+      "pct": 29,
       "icon": "🏀",
       "accent": "#c77ddb",
       "barStart": "#6a1b9a",
@@ -62,11 +62,11 @@
     },
     {
       "name": "SCHOOL",
-      "totalXP": 0,
-      "level": 1,
-      "xpInto": 0,
-      "xpNeeded": 100,
-      "pct": 0,
+      "totalXP": 700,
+      "level": 3,
+      "xpInto": 252,
+      "xpNeeded": 722,
+      "pct": 35,
       "icon": "🎓",
       "accent": "#60a5fa",
       "barStart": "#0d47a1",
@@ -75,5 +75,5 @@
   ],
   "streak": 0,
   "tasksToday": 0,
-  "updated": 1777514978
+  "updated": 1777527518
 }
