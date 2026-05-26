@@ -2,11 +2,11 @@
   "skills": [
     {
       "name": "FINANCE",
-      "totalXP": 1875,
-      "level": 4,
-      "xpInto": 705,
-      "xpNeeded": 1212,
-      "pct": 58,
+      "totalXP": 2475,
+      "level": 5,
+      "xpInto": 93,
+      "xpNeeded": 1811,
+      "pct": 5,
       "icon": "💰",
       "accent": "#ffd700",
       "barStart": "#b8860b",
@@ -14,11 +14,11 @@
     },
     {
       "name": "PROGRAMMING",
-      "totalXP": 6875,
+      "totalXP": 6900,
       "level": 7,
-      "xpInto": 167,
+      "xpInto": 192,
       "xpNeeded": 3320,
-      "pct": 5,
+      "pct": 6,
       "icon": "💻",
       "accent": "#4ade80",
       "barStart": "#00600f",
@@ -62,11 +62,11 @@
     },
     {
       "name": "SCHOOL",
-      "totalXP": 2950,
-      "level": 5,
-      "xpInto": 568,
-      "xpNeeded": 1811,
-      "pct": 31,
+      "totalXP": 4250,
+      "level": 6,
+      "xpInto": 57,
+      "xpNeeded": 2515,
+      "pct": 2,
       "icon": "🎓",
       "accent": "#60a5fa",
       "barStart": "#0d47a1",
@@ -75,5 +75,5 @@
   ],
   "streak": 0,
   "tasksToday": 3,
-  "updated": 1779758927
+  "updated": 1779774039
 }
