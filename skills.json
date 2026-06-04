@@ -2,11 +2,11 @@
   "skills": [
     {
       "name": "FINANCE",
-      "totalXP": 2750,
+      "totalXP": 2800,
       "level": 5,
-      "xpInto": 368,
+      "xpInto": 418,
       "xpNeeded": 1811,
-      "pct": 20,
+      "pct": 23,
       "icon": "💰",
       "accent": "#ffd700",
       "barStart": "#b8860b",
@@ -38,11 +38,11 @@
     },
     {
       "name": "SPORTS",
-      "totalXP": 225,
+      "totalXP": 250,
       "level": 2,
-      "xpInto": 125,
+      "xpInto": 150,
       "xpNeeded": 348,
-      "pct": 36,
+      "pct": 43,
       "icon": "🏀",
       "accent": "#c77ddb",
       "barStart": "#6a1b9a",
@@ -74,6 +74,6 @@
     }
   ],
   "streak": 0,
-  "tasksToday": 7,
-  "updated": 1780532332
+  "tasksToday": 5,
+  "updated": 1780550327
 }
