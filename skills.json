@@ -38,11 +38,11 @@
     },
     {
       "name": "SPORTS",
-      "totalXP": 250,
+      "totalXP": 337,
       "level": 2,
-      "xpInto": 150,
+      "xpInto": 237,
       "xpNeeded": 348,
-      "pct": 43,
+      "pct": 68,
       "icon": "🏀",
       "accent": "#c77ddb",
       "barStart": "#6a1b9a",
@@ -74,6 +74,6 @@
     }
   ],
   "streak": 0,
-  "tasksToday": 5,
-  "updated": 1780797291
+  "tasksToday": 4,
+  "updated": 1780812970
 }
