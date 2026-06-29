@@ -26,11 +26,11 @@
     },
     {
       "name": "FITNESS",
-      "totalXP": 3062,
+      "totalXP": 3162,
       "level": 5,
-      "xpInto": 680,
+      "xpInto": 780,
       "xpNeeded": 1811,
-      "pct": 38,
+      "pct": 43,
       "icon": "💪",
       "accent": "#ff6b4a",
       "barStart": "#c62828",
@@ -75,5 +75,5 @@
   ],
   "streak": 0,
   "tasksToday": 0,
-  "updated": 1782691674
+  "updated": 1782709028
 }
