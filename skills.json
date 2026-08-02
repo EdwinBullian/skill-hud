@@ -2,11 +2,11 @@
   "skills": [
     {
       "name": "FINANCE",
-      "totalXP": 11074,
+      "totalXP": 11124,
       "level": 8,
-      "xpInto": 1046,
+      "xpInto": 1096,
       "xpNeeded": 4222,
-      "pct": 25,
+      "pct": 26,
       "icon": "💰",
       "accent": "#ffd700",
       "barStart": "#b8860b",
@@ -75,5 +75,5 @@
   ],
   "streak": 0,
   "tasksToday": 3,
-  "updated": 1785627522
+  "updated": 1785633195
 }
