@@ -14,11 +14,11 @@
     },
     {
       "name": "PROGRAMMING",
-      "totalXP": 108119,
+      "totalXP": 108219,
       "level": 18,
-      "xpInto": 221,
+      "xpInto": 321,
       "xpNeeded": 18175,
-      "pct": 1,
+      "pct": 2,
       "icon": "💻",
       "accent": "#4ade80",
       "barStart": "#00600f",
@@ -62,11 +62,11 @@
     },
     {
       "name": "SCHOOL",
-      "totalXP": 7064,
+      "totalXP": 7201,
       "level": 7,
-      "xpInto": 356,
+      "xpInto": 493,
       "xpNeeded": 3320,
-      "pct": 11,
+      "pct": 15,
       "icon": "🎓",
       "accent": "#60a5fa",
       "barStart": "#0d47a1",
@@ -74,6 +74,6 @@
     }
   ],
   "streak": 0,
-  "tasksToday": 4,
-  "updated": 1789255301
+  "tasksToday": 1,
+  "updated": 1789262108
 }
