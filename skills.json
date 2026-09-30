@@ -2,11 +2,11 @@
   "skills": [
     {
       "name": "FINANCE",
-      "totalXP": 4841,
+      "totalXP": 4791,
       "level": 6,
-      "xpInto": 648,
+      "xpInto": 598,
       "xpNeeded": 2515,
-      "pct": 26,
+      "pct": 24,
       "icon": "💰",
       "accent": "#ffd700",
       "barStart": "#b8860b",
@@ -62,11 +62,11 @@
     },
     {
       "name": "SCHOOL",
-      "totalXP": 11620,
+      "totalXP": 12657,
       "level": 8,
-      "xpInto": 1592,
+      "xpInto": 2629,
       "xpNeeded": 4222,
-      "pct": 38,
+      "pct": 62,
       "icon": "🎓",
       "accent": "#60a5fa",
       "barStart": "#0d47a1",
@@ -74,6 +74,6 @@
     }
   ],
   "streak": 0,
-  "tasksToday": 5,
-  "updated": 1790728644
+  "tasksToday": 1,
+  "updated": 1790747878
 }
