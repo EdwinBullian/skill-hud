@@ -26,11 +26,11 @@
     },
     {
       "name": "FITNESS",
-      "totalXP": 1100,
+      "totalXP": 1150,
       "level": 3,
-      "xpInto": 652,
+      "xpInto": 702,
       "xpNeeded": 722,
-      "pct": 90,
+      "pct": 97,
       "icon": "💪",
       "accent": "#ff6b4a",
       "barStart": "#c62828",
@@ -62,11 +62,11 @@
     },
     {
       "name": "SCHOOL",
-      "totalXP": 16413,
+      "totalXP": 16576,
       "level": 9,
-      "xpInto": 2163,
+      "xpInto": 2326,
       "xpNeeded": 5219,
-      "pct": 41,
+      "pct": 45,
       "icon": "🎓",
       "accent": "#60a5fa",
       "barStart": "#0d47a1",
@@ -75,5 +75,5 @@
   ],
   "streak": 1,
   "tasksToday": 3,
-  "updated": 1792095614
+  "updated": 1792105722
 }
