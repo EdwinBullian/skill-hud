@@ -14,11 +14,11 @@
     },
     {
       "name": "PROGRAMMING",
-      "totalXP": 38251,
+      "totalXP": 38835,
       "level": 12,
-      "xpInto": 4983,
+      "xpInto": 5567,
       "xpNeeded": 8760,
-      "pct": 57,
+      "pct": 64,
       "icon": "💻",
       "accent": "#4ade80",
       "barStart": "#00600f",
@@ -75,5 +75,5 @@
   ],
   "streak": 1,
   "tasksToday": 1,
-  "updated": 1792675505
+  "updated": 1792692293
 }
