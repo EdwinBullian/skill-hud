@@ -62,11 +62,11 @@
     },
     {
       "name": "SCHOOL",
-      "totalXP": 18336,
+      "totalXP": 18411,
       "level": 9,
-      "xpInto": 4086,
+      "xpInto": 4161,
       "xpNeeded": 5219,
-      "pct": 78,
+      "pct": 80,
       "icon": "🎓",
       "accent": "#60a5fa",
       "barStart": "#0d47a1",
@@ -75,5 +75,5 @@
   ],
   "streak": 0,
   "tasksToday": 7,
-  "updated": 1793723459
+  "updated": 1793743147
 }
