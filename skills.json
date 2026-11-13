@@ -2,11 +2,11 @@
   "skills": [
     {
       "name": "FINANCE",
-      "totalXP": 4992,
+      "totalXP": 5042,
       "level": 6,
-      "xpInto": 799,
+      "xpInto": 849,
       "xpNeeded": 2515,
-      "pct": 32,
+      "pct": 34,
       "icon": "💰",
       "accent": "#ffd700",
       "barStart": "#b8860b",
@@ -14,11 +14,11 @@
     },
     {
       "name": "PROGRAMMING",
-      "totalXP": 41789,
+      "totalXP": 41839,
       "level": 12,
-      "xpInto": 8521,
+      "xpInto": 8571,
       "xpNeeded": 8760,
-      "pct": 97,
+      "pct": 98,
       "icon": "💻",
       "accent": "#4ade80",
       "barStart": "#00600f",
@@ -74,6 +74,6 @@
     }
   ],
   "streak": 0,
-  "tasksToday": 1,
-  "updated": 1794540876
+  "tasksToday": 0,
+  "updated": 1794569491
 }
