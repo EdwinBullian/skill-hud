@@ -14,11 +14,11 @@
     },
     {
       "name": "PROGRAMMING",
-      "totalXP": 42483,
+      "totalXP": 43083,
       "level": 13,
-      "xpInto": 455,
+      "xpInto": 1055,
       "xpNeeded": 10118,
-      "pct": 4,
+      "pct": 10,
       "icon": "💻",
       "accent": "#4ade80",
       "barStart": "#00600f",
@@ -26,11 +26,11 @@
     },
     {
       "name": "FITNESS",
-      "totalXP": 1150,
-      "level": 3,
-      "xpInto": 702,
-      "xpNeeded": 722,
-      "pct": 97,
+      "totalXP": 3650,
+      "level": 5,
+      "xpInto": 1268,
+      "xpNeeded": 1811,
+      "pct": 70,
       "icon": "💪",
       "accent": "#ff6b4a",
       "barStart": "#c62828",
@@ -74,6 +74,6 @@
     }
   ],
   "streak": 0,
-  "tasksToday": 2,
-  "updated": 1795060227
+  "tasksToday": 4,
+  "updated": 1795090866
 }
